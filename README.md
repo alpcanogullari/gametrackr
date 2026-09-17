@@ -1,6 +1,6 @@
-# Game Accountability
+# WatchdawgAI
 
-Game Accountability is a Windows desktop application that helps players keep gaming sessions within their plans without interrupting them at a bad in-game moment. It combines deterministic local observation, AI-assisted discovery, learned game profiles, and a deterministic spoiler-free accountability engine.
+WatchdawgAI is a Windows desktop application that helps players keep gaming sessions within their plans without interrupting them at a bad in-game moment. It combines deterministic local observation, AI-assisted discovery, learned game profiles, and a deterministic spoiler-free accountability engine.
 
 ## Context and specifications
 
