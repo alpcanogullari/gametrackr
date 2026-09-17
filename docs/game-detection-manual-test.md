@@ -4,7 +4,7 @@
 
 This verifies the public running-game API, foreground selection, startup grace, and local identity confirmation. It observes processes and executable metadata read-only. It does not stop, modify, or control applications and makes no network or AI calls.
 
-Run every command from:
+On Windows, run every command from:
 
 ```powershell
 Set-Location -LiteralPath "C:\Users\offline (şimdilik)\Desktop\gametrackr\gametrackr"
@@ -107,3 +107,24 @@ Run Test 2 again. The same executable should now report `confirmed_game`. The re
 ```
 
 All tests should pass. The exact count may increase as the project grows.
+
+## macOS development check
+
+macOS support is experimental. The deterministic process monitor, registry, metadata, and initial launcher/app-bundle detection paths should run, but foreground-window ownership currently returns no active PID outside Windows.
+
+Run from the repository root:
+
+```sh
+python3.13 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e ".[dev]"
+python -m pytest tests/unit/detection -v -p no:cacheprovider --basetemp=.test-temp-manual
+```
+
+For live observation:
+
+```sh
+python -c "from game_accountability.detection import RunningGameService; result=RunningGameService().poll(); print('Running game:', result.primary.identity.display_name if result.primary else 'None')"
+```
+
+Expected behavior is conservative: unconfirmed launcherless applications should not become games, and weak or unknown candidates should remain fixed-timer safe.

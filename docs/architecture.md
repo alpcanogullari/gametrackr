@@ -3,17 +3,17 @@
 ## Document status
 
 - Status: Approved MVP architecture
-- Scope: Windows-first local desktop prototype
-- Last updated: 2026-08-28
+- Scope: Windows-first local desktop prototype with macOS-capable platform boundaries
+- Last updated: 2026-09-16
 
 ## System context
 
-Game Accountability is a single-user Windows desktop application. It observes local processes and, through isolated adapters, read-only local game state. It decides when to issue a spoiler-free reminder and stores configuration and session history locally.
+Game Accountability is a single-user Windows-first desktop application with a platform-neutral core intended to extend to macOS. It observes local processes and, through isolated adapters, read-only local game state. It decides when to issue a spoiler-free reminder and stores configuration and session history locally.
 
 The MVP has no server, account, cloud sync, telemetry, or required storefront integration.
 
 ```text
-Windows processes ----> Game detector ----> Session service
+Local processes -----> Game detector ----> Session service
                                                |
 Fake/game adapter ----> Standard GameState ----+----> Accountability engine
                                                         |
@@ -26,7 +26,7 @@ PySide6 UI/tray <---------------------------------------------------+
 ## Technology stack
 
 - Python 3.13, 64-bit
-- PySide6 for the desktop UI, tray icon, and Windows notifications
+- PySide6 for the desktop UI, native tray/menu-bar surface, and notifications
 - psutil for local process observation
 - watchdog for future file-change-driven adapters
 - pydantic for configuration and adapter boundary validation
@@ -182,7 +182,7 @@ The fake adapter is controlled by deterministic fixture states and is the only r
 ## Process detection and lifecycle
 
 - Poll processes every 2 seconds on a worker thread.
-- Match the normalized resolved executable path case-insensitively on Windows.
+- Match the normalized resolved executable path using the host platform's path rules.
 - Treat access-denied and disappeared-process errors as ordinary observations, not fatal errors.
 - Start a session on the first positive observation for an enabled configured game.
 - Keep one active session until its matching process is absent for two consecutive polls, avoiding a transient read failure ending the session.
@@ -292,11 +292,11 @@ Coverage is a signal, not the sole completion criterion. Domain and application-
 
 ## Architectural decisions
 
-### ADR-001: Local-first Windows desktop application
+### ADR-001: Local-first Windows-first desktop application
 
 - Status: Accepted
-- Decision: Build a single-user Windows desktop application with no required server.
-- Consequence: Privacy and offline operation are simple; cross-device features are deferred.
+- Decision: Build a single-user Windows-first desktop application with no required server and keep platform-specific behavior isolated for later macOS support.
+- Consequence: Privacy and offline operation are simple; cross-device features are deferred. macOS support requires native window observation, menu-bar behavior, notifications, packaging, and validation.
 
 ### ADR-002: Python and PySide6 for the MVP
 
@@ -327,4 +327,3 @@ Coverage is a signal, not the sole completion criterion. Domain and application-
 - Status: Accepted
 - Decision: Validate the end-to-end architecture with deterministic simulated states first.
 - Consequence: Silent Hill 2 and other real adapters begin only after the pipeline acceptance criteria pass.
-

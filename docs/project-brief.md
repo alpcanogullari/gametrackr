@@ -2,7 +2,7 @@
 
 ## What this project is
 
-Game Accountability is a Windows desktop application that helps players stay within a planned gaming duration without interrupting them at a poor moment in the game.
+Game Accountability is a Windows-first desktop application with a platform-neutral core intended to extend to macOS. It helps players stay within a planned gaming duration without interrupting them at a poor moment in the game.
 
 When the target time is reached, the application either gives a normal timer reminder or waits for a reliable natural stopping point. All player-facing guidance remains spoiler-free.
 
@@ -80,12 +80,12 @@ The accountability engine contains no game-specific logic. A story-aware notific
 
 ## Technology direction
 
-The Windows-first stack uses Python 3.13, PySide6, psutil, watchdog, pydantic, platformdirs, sqlite3, pytest, pytest-cov, and Ruff. DSPy and python-dotenv support controlled AI discovery experiments.
+The Windows-first stack uses Python 3.13, PySide6, psutil, watchdog, pydantic, platformdirs, sqlite3, pytest, pytest-cov, and Ruff. These choices keep the core suitable for macOS, but native macOS window observation, menu-bar behavior, notifications, packaging, and real game validation are still required before claiming supported macOS releases. DSPy and python-dotenv support controlled AI discovery experiments.
 
 Large AI frameworks and infrastructure such as LangChain, LlamaIndex, PyTorch, TensorFlow, vector databases, Redis, and Docker are excluded unless a concrete requirement later justifies them.
 
 ## Current status
 
-The DSPy discovery boundary and deterministic process monitor are implemented with offline tests. The monitor reports executable paths and process lifecycle changes without using AI. Game identification, session tracking, the observation pipeline, profiles, runtime engine, persistence, and UI are not yet implemented. The next development step is storefront-independent game identification from process evidence.
+The DSPy discovery boundary, deterministic process monitor, storefront-independent game identifier, game registry, and running-game projection service are implemented with offline tests. The monitor reports executable paths and process lifecycle changes without using AI. Session tracking, the observation pipeline, profiles, runtime engine, persistence, and UI are not yet implemented. The next development step is deterministic session tracking from recognized games.
 
 The initial research games are the original Silent Hill 2 PC release with Enhanced Edition, Deltarune Chapter 4, and Hollow Knight: Silksong. They are validation targets, not currently supported games.

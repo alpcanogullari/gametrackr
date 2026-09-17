@@ -20,6 +20,18 @@ def test_collects_repeatable_bounded_fingerprint_and_nearby_markers(tmp_path: Pa
     assert executable.read_bytes() == before
 
 
+def test_collects_macos_engine_markers(tmp_path: Path) -> None:
+    executable = tmp_path / "Example"
+    executable.write_bytes(b"synthetic executable")
+    marker = tmp_path / "UnityPlayer.dylib"
+    marker.write_bytes(b"synthetic marker")
+
+    result = collect_executable_metadata(executable)
+
+    assert result.sample_sha256 is not None
+    assert result.nearby_markers == ("unityplayer.dylib",)
+
+
 def test_missing_executable_returns_partial_metadata_without_crashing(tmp_path: Path) -> None:
     missing = tmp_path / "missing.exe"
 

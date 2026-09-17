@@ -31,7 +31,7 @@ Clock = Callable[[], datetime]
 
 
 def normalize_executable_path(path: str | os.PathLike[str]) -> str:
-    """Return a stable path key with Windows case normalization."""
+    """Return a stable absolute path key using the host platform's path rules."""
 
     resolved = os.path.realpath(os.path.abspath(os.fspath(path)))
     return os.path.normcase(resolved)

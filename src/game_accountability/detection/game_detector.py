@@ -38,6 +38,8 @@ INSTALL_MARKERS = (
     "/gog games/",
     "\\xboxgames\\",
     "/xboxgames/",
+    "/applications/",
+    "/contents/macos/",
 )
 
 

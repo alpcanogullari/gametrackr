@@ -4,8 +4,8 @@
 
 - Status: Current product and MVP baseline
 - Product: Game Accountability
-- Platform: Windows desktop
-- Last updated: 2026-08-28
+- Platform: Windows-first desktop; macOS-capable architecture planned
+- Last updated: 2026-09-16
 
 ## Product vision
 
@@ -33,7 +33,7 @@ The system should learn how to understand new games with substantially less manu
 
 ## Target users
 
-The initial product is for a single Windows PC user who:
+The initial product is for a single Windows PC user, with the core architecture kept suitable for later macOS support. The user:
 
 - wants to plan the duration of a gaming session;
 - may lose track of time while playing;
@@ -79,6 +79,12 @@ Where technically possible, the architecture must accommodate Steam, Epic Games 
 Core detection must not require a storefront account or API. Identity may combine executable path, executable fingerprint, metadata, installation markers, window metadata, local state locations, and optional storefront evidence.
 
 For the initial automatic-discovery precision gate, an unconfigured process must be a direct or transitive child of a recognized local launcher process before it can be classified as a probable game. This is local process-tree evidence and requires no storefront API. Standalone, DRM-free, and launcherless games remain supported through explicit local path or fingerprint confirmation.
+
+## Platform compatibility
+
+Windows 10 and Windows 11 remain the MVP validation target. macOS support is considered feasible because the accountability engine, AI discovery boundary, profiles, persistence, and most deterministic observation contracts are platform-neutral Python.
+
+Platform-specific integrations must stay isolated behind detection, window-observation, notification, tray/menu-bar, filesystem-location, and packaging boundaries. macOS support must not add game-specific logic to the core accountability engine or weaken the fixed-timer fallback. Until native macOS foreground-window observation, app-bundle and launcher validation, tray/menu-bar behavior, notifications, and real game tests are complete, macOS is an experimental development target rather than a supported product claim.
 
 ## Game-understanding model
 
@@ -247,7 +253,7 @@ Notifications must never expose checkpoint IDs, state variables, areas, objectiv
 - `FR-005`: Optional storefront data may enrich identification but cannot be required.
 - `FR-006`: The application stores session start, heartbeat, end, target, strategy, notification state, and relevant decision reason locally.
 - `FR-007`: The UI can show the current game, mode, elapsed time, target, profile confidence status, and recent session history without spoilers.
-- `FR-008`: The application continues monitoring from the Windows system tray when its main window is hidden.
+- `FR-008`: The application continues monitoring from the native background UI when its main window is hidden: Windows system tray on Windows and menu-bar status item on macOS.
 - `FR-009`: Restart reconciles an unfinished session without counting application downtime as play time.
 
 ### Deterministic observation
@@ -302,7 +308,7 @@ Notifications must never expose checkpoint IDs, state variables, areas, objectiv
 - `NFR-006 Performance`: Routine monitoring and extraction do not block the UI or require continuous AI calls.
 - `NFR-007 Auditability`: Identity, classifications, signals, milestones, and profile rules retain confidence and provenance.
 - `NFR-008 Accessibility`: Core controls are keyboard accessible, labeled, and do not convey state through color alone.
-- `NFR-009 Compatibility`: Initial development targets 64-bit Windows 10 and Windows 11 with Python 3.13.
+- `NFR-009 Compatibility`: Initial development targets 64-bit Windows 10 and Windows 11 with Python 3.13. The architecture must keep core runtime, profile, persistence, and accountability code portable enough for macOS support through isolated platform adapters.
 - `NFR-010 Testability`: Detection, snapshots, diffs, profile validation, adapters, fallback, and the accountability engine can be tested without a commercial game or GUI.
 - `NFR-011 Spoiler safety`: No player-facing string interpolates observations, learned rules, checkpoints, or profile metadata.
 

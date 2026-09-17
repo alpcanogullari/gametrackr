@@ -8,7 +8,7 @@ The architecture changed on 2026-08-28 from a primarily manual adapter/checkpoin
 
 ## Current product direction
 
-Game Accountability is a Windows-first desktop tool for people who want gaming to fit into the rest of their day. A user chooses a target duration. Once the target is reached, the application either gives a fixed reminder or, when reliable game understanding exists, waits for a natural stopping point.
+Game Accountability is a Windows-first desktop tool with a platform-neutral core intended to extend to macOS. A user chooses a target duration. Once the target is reached, the application either gives a fixed reminder or, when reliable game understanding exists, waits for a natural stopping point.
 
 The application does not block games. It must not reveal spoilers. Its identity principle remains:
 
@@ -20,7 +20,8 @@ Its scaling principle is now:
 
 ## Confirmed decisions
 
-- Initial platform: 64-bit Windows 10 and Windows 11.
+- Initial supported platform: 64-bit Windows 10 and Windows 11.
+- macOS applicability: feasible and intended, but experimental until native window observation, menu-bar/tray behavior, notifications, app-bundle and launcher validation, packaging, and real game tests are complete.
 - Runtime stack: Python 3.13, PySide6, psutil, watchdog, pydantic, platformdirs, and sqlite3.
 - Development stack: pytest, pytest-cov, Ruff, Git, VS Code, and Codex.
 - AI experiment stack: DSPy and python-dotenv.
@@ -69,6 +70,12 @@ AI results must pass schema validation and retain model/prompt/module version, s
 ### Runtime accountability
 
 The LLM does not decide from scratch whether the player should stop on every evaluation. Once reliable profile mappings exist, deterministic extraction derives `GameState`, and the deterministic engine applies session target, freshness, confidence, interruptibility, and stop-quality thresholds.
+
+## Platform applicability
+
+The current codebase can be extended to macOS without changing the core product model. Process polling, executable fingerprinting, registry persistence, AI schemas, profile concepts, and deterministic accountability should remain ordinary portable Python. Platform behavior belongs behind small adapters for process evidence, foreground-window ownership, installation/source discovery, notifications, tray or menu-bar UI, and packaging.
+
+The current implementation includes initial macOS-shaped detection signals for Steam launcher processes, app-bundle paths, engine-marker dylibs, and common operating-system path exclusions. macOS foreground-window detection is not implemented yet; the current observer returns no foreground PID outside Windows. Therefore macOS can be used for development and deterministic test coverage, but it is not yet a supported product platform.
 
 ## Discovery Mode
 
@@ -351,7 +358,8 @@ These are research and generalization targets, not current support claims.
 - The deterministic psutil process monitor emits immutable started, running, and stopped snapshots, resolves executable paths, filters configured paths, handles inaccessible or vanished processes, and distinguishes PID reuse through creation time.
 - Unit tests and a real harmless child-process integration test verify detection and exit reporting within five seconds without AI calls.
 - The deterministic game identifier emits `confirmed_game`, `probable_game`, `uncertain`, `not_game`, or `launcher` results with confidence and provenance.
-- Identification can match configured games by normalized executable path or bounded content fingerprint, collect read-only file/installation/engine evidence, use parent-launcher evidence, and reject known launchers, utilities, and Windows system locations.
+- Identification can match configured games by normalized executable path or bounded content fingerprint, collect read-only file/installation/engine evidence, use parent-launcher evidence, and reject known launchers, utilities, and operating-system locations.
+- Identification now includes initial macOS launcher names, app-bundle installation markers, Unity/engine dylib markers, and common macOS system-path exclusions.
 - Automatic game discovery requires a direct or transitive process-tree ancestor whose executable is a recognized launcher. Visible-window ownership, metadata, duration, or installation location cannot qualify an unrelated process by themselves.
 - Exact configured path or fingerprint matches remain a storefront-independent override for standalone, DRM-free, and launcherless games.
 - Processes inside the launcher's own installation, outside a recognized game-library root, are classified as launcher companions even when they own visible windows.
@@ -380,7 +388,7 @@ Continue with step 3: implement deterministic session tracking that consumes pro
 
 - Added immutable identity, executable metadata, evidence, known-game, classification, and result contracts.
 - Added read-only bounded executable fingerprinting and nearby marker discovery without executing or modifying game files.
-- Added explainable launcher, utility, self-process, and Windows system-path exclusions.
+- Added explainable launcher, utility, self-process, and platform system-path exclusions.
 - Added confidence scoring from independent path, file, marker, lifetime, and parent-launcher evidence.
 - Added read-only visible top-level window ownership as primary-process evidence.
 - Added conservative primary-process gating and installation grouping so background helpers cannot qualify from game-directory membership alone.
@@ -396,7 +404,13 @@ Continue with step 3: implement deterministic session tracking that consumes pro
 - Added foreground-window PID observation and deterministic primary selection when multiple games qualify.
 - Added a three-second startup grace, canonical identity deduplication, and five-minute retention of process ancestry actually observed by the service.
 - Added user confirmation, alias merging, strict versioned JSON loading, and atomic local persistence to `GameRegistry`.
-- Added tests for game-only projection, foreground selection, startup grace, launcher exit/retention expiry, registry round trips, malformed registries, and Windows foreground observation.
+- Added tests for game-only projection, foreground selection, startup grace, launcher exit/retention expiry, registry round trips, malformed registries, Windows foreground observation, and initial macOS detection markers.
+
+### 2026-09-16 — macOS applicability statement
+
+- Documented the product as Windows-first with a platform-neutral core intended for macOS.
+- Added initial macOS detection vocabulary for Steam launcher ancestry, app-bundle install paths, engine dylib markers, and operating-system path exclusions.
+- Clarified that macOS is experimental until native foreground-window observation, menu-bar/tray behavior, notifications, packaging, and real game validation are implemented.
 
 ### 2026-08-28 — deterministic process detection
 

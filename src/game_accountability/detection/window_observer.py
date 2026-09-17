@@ -1,4 +1,4 @@
-"""Read-only Windows top-level window ownership observation."""
+"""Read-only top-level window ownership observation where platform support exists."""
 
 import ctypes
 import os

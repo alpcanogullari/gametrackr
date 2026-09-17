@@ -115,9 +115,37 @@ def test_known_launcher_is_rejected_without_collecting_metadata() -> None:
     assert calls == 0
 
 
+def test_macos_launcher_name_is_rejected_without_collecting_metadata() -> None:
+    calls = 0
+
+    def provider(_: Path) -> ExecutableMetadata:
+        nonlocal calls
+        calls += 1
+        raise AssertionError("launcher filtering should happen first")
+
+    result = GameDetector(
+        metadata_provider=provider,
+        window_owner_provider=lambda: frozenset(),
+    ).detect(process("/Applications/Steam.app/Contents/MacOS/steam_osx"))
+
+    assert result.classification is GameClassification.LAUNCHER
+    assert result.identity is None
+    assert calls == 0
+
+
 def test_system_process_is_not_a_game() -> None:
     result = GameDetector(window_owner_provider=lambda: frozenset()).detect(
         process("C:/Windows/System32/custom-service.exe")
+    )
+
+    assert result.classification is GameClassification.NOT_GAME
+    assert result.identity is None
+    assert result.evidence[0].kind is EvidenceKind.SYSTEM_LOCATION
+
+
+def test_macos_system_process_is_not_a_game() -> None:
+    result = GameDetector(window_owner_provider=lambda: frozenset()).detect(
+        process("/System/Library/CoreServices/loginwindow")
     )
 
     assert result.classification is GameClassification.NOT_GAME
@@ -159,6 +187,34 @@ def test_multiple_independent_signals_and_launcher_ancestry_make_a_probable_game
         EvidenceKind.INSTALL_LOCATION,
         EvidenceKind.GAME_MARKER,
         EvidenceKind.PROCESS_LIFETIME,
+        EvidenceKind.PARENT_LAUNCHER,
+    }
+
+
+def test_macos_steam_app_bundle_descendant_can_be_a_probable_game() -> None:
+    game_path = (
+        "/Users/player/Library/Application Support/Steam/steamapps/common/"
+        "Example/Example.app/Contents/MacOS/Example"
+    )
+    launcher = process("/Applications/Steam.app/Contents/MacOS/steam_osx", pid=88)
+    game = process(
+        game_path,
+        pid=501,
+        parent_pid=88,
+        started_at=NOW - timedelta(minutes=5),
+    )
+    detector = GameDetector(
+        metadata_provider=lambda _: metadata(game_path, markers=("unityplayer.dylib",)),
+        window_owner_provider=lambda: frozenset(),
+    )
+
+    result = detector.detect(game, related_processes=(launcher, game))
+
+    assert result.classification is GameClassification.PROBABLE_GAME
+    assert result.identity is not None
+    assert {item.kind for item in result.evidence} >= {
+        EvidenceKind.INSTALL_LOCATION,
+        EvidenceKind.GAME_MARKER,
         EvidenceKind.PARENT_LAUNCHER,
     }
 

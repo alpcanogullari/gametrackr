@@ -14,12 +14,14 @@ MARKER_FILENAMES = frozenset(
     {
         "steam_appid.txt",
         "unityplayer.dll",
+        "unityplayer.dylib",
         "gameassembly.dll",
+        "gameassembly.dylib",
         "ue4commandline.txt",
         "goggame.info",
     }
 )
-MARKER_SUFFIXES = ("-shipping.exe", "-win64-shipping.exe")
+MARKER_SUFFIXES = ("-shipping.exe", "-win64-shipping.exe", "-mac-shipping")
 
 
 def collect_executable_metadata(path: Path) -> ExecutableMetadata:
