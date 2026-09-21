@@ -1,6 +1,6 @@
 # WatchdawgAI
 
-<<<<<<< HEAD
+
 Game Accountability is a Windows-first desktop application with a platform-neutral core that is intended to extend to macOS. It helps players keep gaming sessions within their plans without interrupting them at a bad in-game moment by combining deterministic local observation, AI-assisted discovery, learned game profiles, and a deterministic spoiler-free accountability engine.
 
 ## Platform status
@@ -10,7 +10,6 @@ The current MVP target remains 64-bit Windows 10 and Windows 11. The existing pr
 macOS support is feasible, but experimental until native foreground-window observation, tray/menu-bar behavior, notifications, launcher evidence, app-bundle paths, and manual game-detection validation are completed. Unknown or weakly identified games still fall back to fixed-timer behavior.
 =======
 WatchdawgAI is a Windows desktop application that helps players keep gaming sessions within their plans without interrupting them at a bad in-game moment. It combines deterministic local observation, AI-assisted discovery, learned game profiles, and a deterministic spoiler-free accountability engine.
->>>>>>> cdaa541b227d3af5170e35ea80cdb850a790ab0b
 
 ## Context and specifications
 
